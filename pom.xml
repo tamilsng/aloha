@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 	JBoss, Home of Professional Open Source
 	Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
 	contributors by the @authors tag. See the copyright.txt in the
@@ -14,7 +14,6 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -45,10 +44,14 @@
 		<openfeign.version>9.4.0</openfeign.version>
 		<version.opentracing>0.22.0</version.opentracing>
 		<openfeign.opentracing.version>0.0.3</openfeign.opentracing.version>
-		<vertx.version>3.3.3</vertx.version>
+		<vertx.version>3.4.2</vertx.version>
 		<hystrix.version>1.5.1</hystrix.version>
 		<version.exec.plugin>1.4.0</version.exec.plugin>
 		<version.jaeger>0.19.0</version.jaeger>
+
+		<!-- Setting the image explicity to use redhat-openjdk -->
+		<!-- There is kind of issue honoring JAVA_OPTIONS with fabric8-s2i images -->
+		<fabric8.generator.from>registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift</fabric8.generator.from>
 	</properties>
 
 	<dependencies>
@@ -145,6 +148,44 @@
 							<outputFile>${project.build.directory}/${project.artifactId}-fat.jar
 							</outputFile>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>fabric8-maven-plugin</artifactId>
+				<version>3.5.30</version>
+				<configuration>
+					<resources>
+						<labels>
+							<all>
+								<property>
+									<name>app</name>
+									<value>aloha</value>
+								</property>
+								<property>
+									<name>hystrix.enabled</name>
+									<value>true</value>
+								</property>
+							</all>
+						</labels>
+					</resources>
+					<enricher>
+						<config>
+							<vertx-health-check>
+								<path>/api/health</path>
+							</vertx-health-check>
+						</config>
+					</enricher>
+				</configuration>
+				<executions>
+					<execution>
+						<id>fmp</id>
+						<goals>
+							<goal>resource</goal>
+							<goal>helm</goal>
+							<goal>build</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
