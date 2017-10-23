@@ -28,7 +28,7 @@ podTemplate(
     
         stage ('Automated tests'){
             echo 'This stage simulates automated tests'
-            sh "mvn -B -Dmaven.test.failure.ignore verify"
+            sh "mvn -B -Dmaven.test.failure.ignore test"
         }
     
         stage ('QA - Promote image'){
