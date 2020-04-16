@@ -20,7 +20,7 @@ podTemplate(
     
         stage ('DEV - Image build'){
             echo 'Building docker image and deploying to Dev'
-            buildApp('helloworld-msa-dev', "aloha")
+            buildApp('aub', "aloha")
             echo "This is the build number: ${env.BUILD_NUMBER}"
         }
     
